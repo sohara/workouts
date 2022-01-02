@@ -1,0 +1,6 @@
+type Workout @model @auth(rules: [{allow: owner}]) {
+  id: ID!
+  name: String
+  owner: String
+}
+ 

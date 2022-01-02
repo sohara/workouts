@@ -10,7 +10,7 @@ import config from './aws-exports';
 
 Amplify.configure({
   ...config,
-  Anlytics: {
+  Analytics: {
     disabled: true,
   },
 });
@@ -29,4 +29,4 @@ function App() {
     );
   }
 }
-export default withAuthenticator(App, {});
+export default withAuthenticator(App);
