@@ -1,15 +1,15 @@
-import { StyleSheet } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import { DataStore } from 'aws-amplify';
 
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 import { RootTabScreenProps } from '../types';
 import { Workout } from '../models';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ConsoleLogger } from '@aws-amplify/core';
 export default function TabOneScreen({
   navigation,
-}: RootTabScreenProps<'TabOne'>) {
+}: RootTabScreenProps<'Workouts'>) {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   useEffect(() => {
     DataStore.clear();
@@ -26,19 +26,26 @@ export default function TabOneScreen({
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Workouts</Text>
-      <Text
+      {/* <Text 
         // onPress={() => {
         //   DataStore.save(
         //     new Workout({ name: `Workout - ${new Date().toISOString()}` })
         //   );
         // }}
-        onPress={() => {
-          navigation.navigate('');
-        }}
-        style={{}}
+      //   onPress={() => {
+      //     navigation.navigate('Workouts', { screen: 'Create' });
+      //     console.warn('tried to navigate');
+      //   }}
+      //   style={{}}
+      // > */}
+      <Pressable
+        onPress={() => navigation.navigate('Workouts', { screen: 'Create' })}
+        style={({ pressed }) => ({
+          opacity: pressed ? 0.5 : 1,
+        })}
       >
-        Create Workout
-      </Text>
+        <Text>Create Workout</Text>
+      </Pressable>
       <View
         style={styles.separator}
         lightColor="#eee"
