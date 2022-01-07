@@ -1,7 +1,7 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { DataStore } from 'aws-amplify';
 import React, { useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, Text, TextInput, View, StyleSheet } from 'react-native';
 import { Workout } from '../models';
 import { RootStackScreenProps, WorkoutsStackParamList } from '../types';
 
@@ -9,25 +9,20 @@ type Props = NativeStackScreenProps<WorkoutsStackParamList, 'Create'>;
 
 export function WorkoutsCreate({ navigation }: Props) {
   const [name, setName] = useState('');
-  console.warn({ name });
   return (
     <View
       style={{
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        paddingHorizontal: 10,
       }}
     >
       <Text>Create Screen</Text>
       <TextInput
         onChangeText={setName}
-        style={{
-          height: 40,
-          margin: 12,
-          borderWidth: 1,
-          padding: 10,
-          width: 300,
-        }}
+        placeholder="Workout name"
+        style={styles.input}
       />
       <Pressable
         onPress={async () => {
@@ -45,3 +40,14 @@ export function WorkoutsCreate({ navigation }: Props) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+    width: '100%',
+    borderRadius: 5,
+  },
+});

@@ -1,12 +1,10 @@
 import { Pressable, StyleSheet } from 'react-native';
-import { DataStore } from 'aws-amplify';
+import { Auth, DataStore } from 'aws-amplify';
 
-import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 import { RootTabScreenProps } from '../types';
 import { Workout } from '../models';
 import React, { useEffect, useState } from 'react';
-import { ConsoleLogger } from '@aws-amplify/core';
 export default function TabOneScreen({
   navigation,
 }: RootTabScreenProps<'Workouts'>) {
@@ -23,21 +21,12 @@ export default function TabOneScreen({
 
     return () => subscription.unsubscribe();
   }, []);
+  Auth.currentSession().then((res) => {
+    console.warn('user', res);
+  });
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Workouts</Text>
-      {/* <Text 
-        // onPress={() => {
-        //   DataStore.save(
-        //     new Workout({ name: `Workout - ${new Date().toISOString()}` })
-        //   );
-        // }}
-      //   onPress={() => {
-      //     navigation.navigate('Workouts', { screen: 'Create' });
-      //     console.warn('tried to navigate');
-      //   }}
-      //   style={{}}
-      // > */}
       <Pressable
         onPress={() => navigation.navigate('Workouts', { screen: 'Create' })}
         style={({ pressed }) => ({
@@ -55,16 +44,35 @@ export default function TabOneScreen({
       {workouts.map((workout) => (
         <Text key={workout.id}>{workout.name}</Text>
       ))}
-      {/* <EditScreenInfo path="/screens/TabOneScreen.tsx" /> */}
+      <Pressable
+        onPress={() => {
+          Auth.signOut();
+        }}
+        style={({ pressed }) => ({
+          ...styles.button,
+          opacity: pressed ? 0.5 : 1,
+        })}
+      >
+        <Text style={styles.buttonText}>Sign out</Text>
+      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  button: {
+    padding: 10,
+    backgroundColor: '#333',
+    borderRadius: 20,
+  },
+  buttonText: {
+    color: '#fff',
+  },
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    // backgroundColor: '#444',
   },
   title: {
     fontSize: 20,

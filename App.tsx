@@ -22,7 +22,7 @@ function App() {
     return null;
   } else {
     return (
-      <SafeAreaProvider>
+      <SafeAreaProvider style={{ backgroundColor: '#444' }}>
         <Navigation colorScheme={colorScheme} />
         <StatusBar />
       </SafeAreaProvider>

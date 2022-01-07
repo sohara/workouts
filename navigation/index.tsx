@@ -26,7 +26,7 @@ import {
   RootStackParamList,
   RootTabParamList,
   RootTabScreenProps,
-  WorkoutsStackParams,
+  WorkoutsStackParamList,
 } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 import { View } from '../components/Themed';
@@ -36,10 +36,18 @@ export default function Navigation({
 }: {
   colorScheme: ColorSchemeName;
 }) {
+  console.error({ colorScheme });
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
-      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+      theme={
+        colorScheme === 'dark'
+          ? {
+              ...DarkTheme,
+              colors: { ...DarkTheme.colors, background: 'rgb(140, 242, 242)' },
+            }
+          : DefaultTheme
+      }
     >
       <RootNavigator />
     </NavigationContainer>
@@ -72,7 +80,7 @@ function RootNavigator() {
   );
 }
 
-const WorkoutsStack = createNativeStackNavigator<WorkoutsStackParams>();
+const WorkoutsStack = createNativeStackNavigator<WorkoutsStackParamList>();
 const WorkoutsStackScreen = () => {
   return (
     <WorkoutsStack.Navigator initialRouteName="WorkoutsList">
