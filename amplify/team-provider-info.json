@@ -1,0 +1,20 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-workouts-staging-165614-authRole",
+      "UnauthRoleArn": "arn:aws:iam::069223256342:role/amplify-workouts-staging-165614-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::069223256342:role/amplify-workouts-staging-165614-authRole",
+      "Region": "us-west-2",
+      "DeploymentBucketName": "amplify-workouts-staging-165614-deployment",
+      "UnauthRoleName": "amplify-workouts-staging-165614-unauthRole",
+      "StackName": "amplify-workouts-staging-165614",
+      "StackId": "arn:aws:cloudformation:us-west-2:069223256342:stack/amplify-workouts-staging-165614/e56d6b50-6bec-11ec-baf1-061add285e55",
+      "AmplifyAppId": "d23e92k9p9ngyn"
+    },
+    "categories": {
+      "auth": {
+        "Workouts": {}
+      }
+    }
+  }
+}
