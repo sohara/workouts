@@ -1,16 +1,37 @@
 import Amplify, { Auth } from 'aws-amplify';
 import { StatusBar } from 'expo-status-bar';
-import { Button, StyleSheet, Text, View, Image } from 'react-native';
+import {
+  Button,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  Pressable,
+} from 'react-native';
 import { withAuthenticator } from 'aws-amplify-react-native';
 import {
   NavigationContainer,
+  NavigatorScreenParams,
   useNavigationState,
 } from '@react-navigation/native';
 import {
   createNativeStackNavigator,
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
+import { Button as MyButton } from './src/components/Button';
 import awsconfig from './src/aws-exports';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { HomeScreen } from './src/screens/Home';
+import { Workout } from './src/models';
+import {
+  HomeStackParamList,
+  HomeStackScreen,
+} from './src/screens/HomeStackScreen';
+import {
+  WorkoutsStackParamList,
+  WorkoutStackScreen,
+} from './src/screens/WorkoutsStackScreen';
 Amplify.configure({
   ...awsconfig,
   Analytics: {
@@ -18,42 +39,23 @@ Amplify.configure({
   },
 });
 
-type RootStackParamList = {
-  Home: undefined;
-  Details: { itemID: number; otherParam: 'foo' | 'bar' };
+export type RootStackParamList = {
+  Home: NavigatorScreenParams<HomeStackParamList>;
+  // Details: { itemID: number; otherParam: 'foo' | 'bar' };
+  Workouts: NavigatorScreenParams<WorkoutsStackParamList>;
+  // Details: undefined;
+  Logs: undefined;
 };
-
-type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
-function HomeScreen({ navigation, route }: HomeScreenProps) {
-  // console.warn({ route });
-  // const state = useNavigationState((state) => state);
-  // console.warn({ state });
-  return (
-    <View style={styles.container}>
-      <Text>Home Screen</Text>
-      <Button
-        title="Go to Details"
-        onPress={() =>
-          navigation.navigate('Details', {
-            itemID: 86,
-            otherParam: 'foo',
-          })
-        }
-      />
-      <StatusBar style="auto" />
-    </View>
-  );
-}
 
 type DetailsScreenProps = NativeStackScreenProps<RootStackParamList, 'Details'>;
 function Details({ navigation, route }: DetailsScreenProps) {
-  const { itemID, otherParam } = route.params;
+  // const { itemID, otherParam } = route.params;
   return (
     <View style={styles.container}>
       <Text>Details</Text>
-      <Text>itemID: {JSON.stringify(itemID)}</Text>
-      <Text>otherParam: {JSON.stringify(otherParam)}</Text>
-      <Button
+      {/* <Text>itemID: {JSON.stringify(itemID)}</Text>
+      <Text>otherParam: {JSON.stringify(otherParam)}</Text> */}
+      {/* <Button
         title="Go to Details... again"
         onPress={() =>
           navigation.navigate('Details', {
@@ -61,41 +63,55 @@ function Details({ navigation, route }: DetailsScreenProps) {
             otherParam: 'foo',
           })
         }
-      />
+      /> */}
       <Button title="Go back" onPress={() => navigation.goBack()} />
     </View>
   );
 }
 
-const RootStack = createNativeStackNavigator<RootStackParamList>();
-
+const RootStack = createBottomTabNavigator<RootStackParamList>();
 function App() {
   return (
     <NavigationContainer>
       <RootStack.Navigator
         initialRouteName="Home"
         screenOptions={{
-          headerStyle: { backgroundColor: '#f4511e' },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
+          headerShown: false,
+          // headerStyle: { backgroundColor: '#f4511e' },
+          // headerTintColor: '#fff',
+          // headerTitleStyle: {
+          //   fontWeight: 'bold',
+          // },
         }}
       >
         <RootStack.Screen
           name="Home"
-          component={HomeScreen}
-          options={{ headerShown: false }}
+          component={HomeStackScreen}
         ></RootStack.Screen>
         <RootStack.Screen
-          name="Details"
-          component={Details}
+          name="Workouts"
+          component={WorkoutStackScreen}
           // options={({ route }) => ({ title: route.params.itemID })}
-          options={(options) => {
-            console.warn({ itemID: options.route.params.itemID });
-            return { title: `item ${options.route.params.itemID}` };
-          }}
+          // options={(options) => {
+          //   console.warn({ itemID: options.route.params.itemID });
+          //   return { title: `item ${options.route.params.itemID}` };
+          // }}
         ></RootStack.Screen>
+        <RootStack.Screen
+          name="Logs"
+          // component={Details}
+          // options={({ route }) => ({ title: route.params.itemID })}
+          // options={(options) => {
+          //   console.warn({ itemID: options.route.params.itemID });
+          //   return { title: `item ${options.route.params.itemID}` };
+          // }}
+        >
+          {() => (
+            <View>
+              <Text>Logs</Text>
+            </View>
+          )}
+        </RootStack.Screen>
       </RootStack.Navigator>
       {/* {() => {
         return (
@@ -115,6 +131,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-evenly',
   },
 });
