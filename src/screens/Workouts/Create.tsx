@@ -6,12 +6,16 @@ import { RootStackParamList } from '../../../App';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { Workout } from '../../models';
+import { CompositeScreenProps } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack';
+import { WorkoutsStackParamList } from '../WorkoutsStackScreen';
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 
-type WorkoutsListScreenProps = NativeStackScreenProps<
-  RootStackParamList,
-  'Workouts'
+type WorkoutsCreateScreenProps = CompositeScreenProps<
+  StackScreenProps<WorkoutsStackParamList>,
+  BottomTabScreenProps<RootStackParamList, 'Workouts'>
 >;
-export function WorkoutsCreate({ navigation }: WorkoutsListScreenProps) {
+export function WorkoutsCreate({ navigation }: WorkoutsCreateScreenProps) {
   const [name, setName] = useState('');
   return (
     <View
@@ -31,8 +35,13 @@ export function WorkoutsCreate({ navigation }: WorkoutsListScreenProps) {
       <Button
         disabled={!name}
         onPress={async () => {
-          await DataStore.save(new Workout({ name }));
-          alert('adding');
+          const workout = await DataStore.save(new Workout({ name }));
+          console.warn({ workout });
+          //   navigation.navigate('Workouts', {
+          //     screen: 'Exercises',
+          //     params: { workoutID: workout.id },
+          //   });
+          navigation.navigate('Exercises', { workoutID: workout.id });
         }}
         title="Continue ->"
       />

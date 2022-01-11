@@ -1,13 +1,20 @@
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { CompositeScreenProps } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { StackScreenProps } from '@react-navigation/stack';
+import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { RootStackParamList } from '../../../App';
 import { Card } from '../../components/Card';
+import { CircularButton } from '../../components/CircularButton';
+import { WorkoutsStackParamList } from '../WorkoutsStackScreen';
 
-type WorkoutsListScreenProps = NativeStackScreenProps<
-  RootStackParamList,
-  'Workouts'
+type WorkoutsListScreenProps = CompositeScreenProps<
+  StackScreenProps<WorkoutsStackParamList>,
+  BottomTabScreenProps<RootStackParamList, 'Workouts'>
 >;
-export function WorkoutsList({ navigation }: WorkoutsListScreenProps) {
+
+export function WorkoutsList({ navigation, route }: WorkoutsListScreenProps) {
   return (
     <View
       style={{
@@ -20,19 +27,9 @@ export function WorkoutsList({ navigation }: WorkoutsListScreenProps) {
       <Text style={{ fontSize: 24 }}>Workouts </Text>
       <Card text="Push 1" />
       <Card text="Pull 1" />
-      <Pressable
-        style={{
-          borderWidth: 2,
-          borderRadius: 50,
-          padding: 0,
-          width: 60,
-          height: 60,
-          alignItems: 'center',
-        }}
+      <CircularButton
         onPress={() => navigation.navigate('Workouts', { screen: 'Create' })}
-      >
-        <Text style={{ fontSize: 44 }}>+</Text>
-      </Pressable>
+      />
     </View>
   );
 }
