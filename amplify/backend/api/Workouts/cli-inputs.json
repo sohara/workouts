@@ -3,7 +3,7 @@
   "serviceConfiguration": {
     "apiName": "Workouts",
     "serviceName": "AppSync",
-    "gqlSchemaPath": "/tmp/amplify-616ab969-3d2c-4dc3-9b67-9a983f3a24a4/amplify/backend/api/Workouts/schema.graphql",
+    "gqlSchemaPath": "/tmp/amplify-7c6e1b68-f168-4442-a434-7c0888d98a1e/amplify/backend/api/Workouts/schema.graphql",
     "defaultAuthType": {
       "mode": "AMAZON_COGNITO_USER_POOLS",
       "cognitoUserPoolId": "authWorkouts"

@@ -1,6 +1,21 @@
+type WorkoutStep @model @auth(rules: [{allow: private}]) {
+  id: ID!
+  Exercise: Exercise! @hasOne
+  workoutID: ID @index(name: "byWorkout")
+  sets: Int!
+  repsMin: Int!
+  repsMax: Int!
+}
+
+type Exercise @model @auth(rules: [{allow: private}]) {
+  id: ID!
+  name: String!
+}
+
 type Workout @model @auth(rules: [{allow: owner}]) {
   id: ID!
   name: String
   owner: String
+  WorkoutSteps: [WorkoutStep] @hasMany(indexName: "byWorkout", fields: ["id"])
 }
  
