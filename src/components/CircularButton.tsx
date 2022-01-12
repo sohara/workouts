@@ -1,6 +1,12 @@
 import { GestureResponderEvent, Pressable, Text } from 'react-native';
 
-export function CircularButton({ onPress }: { onPress: () => void }) {
+export function CircularButton({
+  text,
+  onPress,
+}: {
+  text: string;
+  onPress: () => void;
+}) {
   console.warn({ onPress });
   return (
     <Pressable
@@ -14,7 +20,7 @@ export function CircularButton({ onPress }: { onPress: () => void }) {
       }}
       onPress={onPress}
     >
-      <Text style={{ fontSize: 44 }}>+</Text>
+      <Text style={{ fontSize: 44 }}>{text}</Text>
     </Pressable>
   );
 }

@@ -1,6 +1,12 @@
 import { Pressable, Text } from 'react-native';
 
-export function Card({ text }: { text: string }) {
+export function Card({
+  text,
+  onPress,
+}: {
+  text: string;
+  onPress?: () => void;
+}) {
   return (
     <Pressable
       style={{
@@ -10,6 +16,7 @@ export function Card({ text }: { text: string }) {
         borderRadius: 10,
         alignItems: 'center',
       }}
+      onPress={onPress}
     >
       <Text style={{ fontSize: 18 }}>{text}</Text>
     </Pressable>

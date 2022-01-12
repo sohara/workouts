@@ -5,7 +5,7 @@ import { DataStore } from 'aws-amplify';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { RootStackParamList } from '../../../App';
-import { Workout } from '../../models';
+import { Workout, WorkoutStep } from '../../models';
 import { WorkoutsStackParamList } from '../WorkoutsStackScreen';
 import { Card } from '../../components/Card';
 import { CircularButton } from '../../components/CircularButton';
@@ -19,6 +19,7 @@ export function WorkoutsExercises({
   route,
 }: WorkoutsExercisesScreenProps) {
   const [workout, setWorkout] = useState<Workout | undefined>(undefined);
+  const [workoutSteps, setWorkoutSteps] = useState<WorkoutStep[]>([]);
   const { params } = route;
   const workoutID = params?.workoutID;
 
@@ -27,6 +28,9 @@ export function WorkoutsExercises({
       return;
     }
     DataStore.query(Workout, workoutID).then(setWorkout);
+    DataStore.query(WorkoutStep, (ws) => ws.workoutID('eq', workoutID)).then(
+      setWorkoutSteps
+    );
   }, [workoutID]);
   return (
     <View
@@ -38,12 +42,15 @@ export function WorkoutsExercises({
       }}
     >
       <Text style={{ fontSize: 24 }}>{workout?.name}</Text>
-      <Text style={{ fontSize: 24 }}>{workout?.id}</Text>
-      <Card text="Goblet Squat" />
-      <Card text="Dumbbell Lunge" />
+      {workoutSteps.map((workoutStep) => (
+        <Card
+          text={`${workoutStep.Exercise.name} - ${workoutStep.sets} sets x ${workoutStep.repsMin} - ${workoutStep.repsMax} reps`}
+          key={workoutStep.id}
+        />
+      ))}
       <CircularButton
+        text="+"
         onPress={() => {
-          alert('Adding exercise');
           navigation.navigate('AddExercise', { workoutID: workout?.id || '' });
         }}
       />
