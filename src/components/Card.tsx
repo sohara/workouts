@@ -1,10 +1,12 @@
 import { Pressable, Text } from 'react-native';
 
 export function Card({
-  text,
+  title,
+  description,
   onPress,
 }: {
-  text: string;
+  title: string;
+  description?: string;
   onPress?: () => void;
 }) {
   return (
@@ -12,13 +14,16 @@ export function Card({
       style={{
         borderWidth: 1,
         padding: 20,
-        width: '70%',
+        // width: '70%',
         borderRadius: 10,
         alignItems: 'center',
       }}
       onPress={onPress}
     >
-      <Text style={{ fontSize: 18 }}>{text}</Text>
+      <Text style={{ fontSize: 18 }}>{title}</Text>
+      {description && (
+        <Text style={{ fontSize: 14, paddingTop: 12 }}>{description}</Text>
+      )}
     </Pressable>
   );
 }

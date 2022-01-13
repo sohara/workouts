@@ -38,7 +38,7 @@ export function WorkoutsList({ navigation, route }: WorkoutsListScreenProps) {
       {workouts.map((workout) => {
         return (
           <Card
-            text={workout.name || ''}
+            title={workout.name || ''}
             key={workout.id}
             onPress={() => {
               navigation.navigate('Exercises', { workoutID: workout.id });

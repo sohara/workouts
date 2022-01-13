@@ -10,7 +10,7 @@ export type WorkoutsStackParamList = {
   List: undefined;
   Create: undefined;
   Exercises: { workoutID: string };
-  AddExercise: { workoutID: string };
+  AddExercise: { workoutID: string; workoutStepID?: string };
 };
 
 const WokroutsStack = createNativeStackNavigator<WorkoutsStackParamList>();
@@ -20,7 +20,7 @@ export function WorkoutStackScreen() {
     <WokroutsStack.Navigator>
       <WokroutsStack.Screen
         name="List"
-        options={{ headerShown: true }}
+        options={{ headerShown: true, title: 'Manage Workouts' }}
         component={WorkoutsList}
       />
       <WokroutsStack.Screen

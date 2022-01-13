@@ -2,9 +2,15 @@ import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { DataStore } from 'aws-amplify';
-import { useEffect, useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { RootStackParamList } from '../../../App';
 import { Exercise, Workout } from '../../models';
 import { WorkoutsStackParamList } from '../WorkoutsStackScreen';
@@ -12,34 +18,62 @@ import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
 import { CircularButton } from '../../components/CircularButton';
 import { WorkoutStep } from '../../models';
+import { SelectPicker } from '../../components/SelectPicker';
 
 type WorkoutsAddExerciseScreenProps = CompositeScreenProps<
-  StackScreenProps<WorkoutsStackParamList>,
+  StackScreenProps<WorkoutsStackParamList, 'AddExercise'>,
   BottomTabScreenProps<RootStackParamList, 'Workouts'>
 >;
 export function WorkoutsAddExercise({
   navigation,
   route,
 }: WorkoutsAddExerciseScreenProps) {
-  const [workout, setWorkout] = useState<Workout | undefined>(undefined);
+  //   const [workout, setWorkout] = useState<Workout | undefined>(undefined);
+  const [workoutStep, setWorkoutStep] = useState<WorkoutStep | undefined>(
+    undefined
+  );
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [selectedExerciseID, setSelectedExerciseID] = useState<string | null>(
     null
   );
-  const [sets, setSets] = useState(6);
+  //   const [exercise, setExercise] = useState<Exercise | undefined>(undefined);
+  const [sets, setSets] = useState(3);
   const [repsMin, setRepsMin] = useState(4);
   const [repsMax, setRepsMax] = useState(6);
+  const [selectOpen, setSelectOpen] = useState(false);
 
-  const { params } = route;
-  const workoutID = params?.workoutID;
+  const { workoutID, workoutStepID } = route.params;
+  //   const workoutID = params.workoutID;
+  //   const workoutStepID = params.workoutStepID;
+  const exercise = useMemo(() => {
+    return exercises.find((m) => m.id === selectedExerciseID);
+  }, [exercises, selectedExerciseID]);
 
   useEffect(() => {
-    if (!workoutID) {
-      return;
-    }
-    DataStore.query(Workout, workoutID).then(setWorkout);
+    // DataStore.query(Workout, workoutID).then(setWorkout);
     DataStore.query(Exercise).then(setExercises);
-  }, [workoutID]);
+    const setWorkoutStepValues = async () => {
+      if (workoutStepID) {
+        const result = await DataStore.query(WorkoutStep, workoutStepID);
+        if (result) {
+          setWorkoutStep(result);
+          setSets(result.sets);
+          setRepsMax(result.repsMax);
+          setRepsMin(result.repsMin);
+          //   set
+          setSelectedExerciseID(result.workoutStepExerciseId);
+        }
+      }
+    };
+    setWorkoutStepValues();
+  }, []);
+
+  // Ensure min reps is at least eq to max reps
+  useEffect(() => {
+    if (repsMin > repsMax) {
+      setRepsMax(repsMin);
+    }
+  }, [repsMin, repsMax]);
 
   return (
     <View
@@ -50,27 +84,26 @@ export function WorkoutsAddExercise({
         justifyContent: 'space-evenly',
       }}
     >
-      <Text style={{ fontSize: 24 }}>Add Exercise</Text>
-      <View style={{ width: '100%' }}>
-        <Text style={{ fontSize: 18 }}>Exercise</Text>
-        <Picker
-          selectedValue={selectedExerciseID}
-          onValueChange={(itemValue) => {
-            console.warn('selecting', itemValue);
-            setSelectedExerciseID(itemValue);
-          }}
-          mode="dropdown"
-          style={styles.picker}
-        >
-          {exercises.map((exercise) => (
-            <Picker.Item
-              label={exercise.name}
-              value={exercise.id}
-              key={exercise.id}
-            />
-          ))}
-        </Picker>
-      </View>
+      <Text style={{ fontSize: 24, paddingVertical: 10 }}>Workout Step</Text>
+      <Pressable
+        style={{
+          padding: 10,
+          borderWidth: 1,
+          marginBottom: 20,
+        }}
+        onPress={() => {
+          setSelectOpen(true);
+        }}
+      >
+        <Text style={{ fontSize: 24 }}>{exercise?.name}</Text>
+      </Pressable>
+      <SelectPicker
+        modalOpen={selectOpen}
+        options={exercises.map((e) => ({ label: e.name, value: e.id }))}
+        setModalOpen={(open) => setSelectOpen(open)}
+        setValue={(value) => setSelectedExerciseID(value)}
+        value={selectedExerciseID ?? ''}
+      />
 
       <Text style={styles.fieldTitle}>Sets</Text>
       <NumberPicker value={sets} setValue={setSets} />
@@ -84,22 +117,33 @@ export function WorkoutsAddExercise({
         title="Save ->"
         disabled={false}
         onPress={async () => {
-          const exercise = exercises.find((e) => e.id === selectedExerciseID);
+          //   const exercise = exercises.find((e) => e.id === selectedExerciseID);
           if (exercise && selectedExerciseID && workoutID) {
-            await DataStore.save(
-              new WorkoutStep({
+            let workoutStepToSave;
+            if (workoutStep) {
+              workoutStepToSave = WorkoutStep.copyOf(workoutStep, (updated) => {
+                updated.sets = sets;
+                updated.repsMax = repsMax;
+                updated.repsMin = repsMin;
+                updated.Exercise = exercise;
+                updated.workoutStepExerciseId = selectedExerciseID;
+              });
+            } else {
+              workoutStepToSave = new WorkoutStep({
                 workoutID: workoutID,
                 Exercise: exercise,
                 workoutStepExerciseId: selectedExerciseID,
                 sets,
                 repsMin,
                 repsMax,
-              })
-            );
-            navigation.navigate('Exercises', { workoutID });
-          }
+              });
+            }
 
-          alert('missing exercise or workoutID');
+            await DataStore.save(workoutStepToSave);
+            navigation.navigate('Exercises', { workoutID });
+          } else {
+            alert('missing exercise or workoutID');
+          }
         }}
       />
     </View>
@@ -108,10 +152,10 @@ export function WorkoutsAddExercise({
 
 const styles = StyleSheet.create({
   picker: {
-    marginVertical: 20,
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#666',
+    // marginVertical: 20,
+    // width: '100%',
+    // borderWidth: 1,
+    // borderColor: '#666',
   },
   fieldTitle: {
     fontSize: 24,
